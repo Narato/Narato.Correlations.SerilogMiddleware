@@ -14,7 +14,6 @@ namespace Narato.Correlations.SerilogMiddlewareTest.Middleware
 {
     public class CorrelationSeriLogEnrichingMiddlewareTest
     {
-
         [Fact]
         public async void TestLogMessagesAreEnriched()
         {
@@ -51,6 +50,45 @@ namespace Narato.Correlations.SerilogMiddlewareTest.Middleware
             // Assert
             var debugMessage = _writer.ToString();
             Assert.Equal($"[Debug {guid}] test\r\n", debugMessage);
+        }
+
+        [Fact]
+        public async void TestWrongConfigShouldThrowException()
+        {
+            StringWriter _writer = new StringWriter();
+            Guid guid;
+            // Arrange
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    
+                    app.UseCorrelationLogging();
+                    // notice they're in wrong order here...
+                    app.UseCorrelations();
+
+                    // endpoint
+                    app.Run(async (HttpContext context) =>
+                    {
+                        var provider = app.ApplicationServices.GetService<ICorrelationIdProvider>();
+                        guid = provider.GetCorrelationId();
+                        Log.Debug("test");
+                        await context.Response.WriteAsync("meep");
+                    });
+
+                })
+                .ConfigureServices(services =>
+                {
+                    Log.Logger = new LoggerConfiguration().Enrich.FromLogContext().MinimumLevel.Debug().WriteTo.TextWriter(_writer, outputTemplate: "[{Level} {CorrelationId}] {Message}{NewLine}{Exception}").CreateLogger();
+                    services.AddCorrelations();
+                });
+
+            var server = new TestServer(builder);
+
+            // Act + assert
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await server.CreateClient().GetAsync("/"));
+
+            // Assert
+            Assert.Equal("No correlation ID was found on the response headers. Did you set up Narato.Correlations correctly?", ex.Message);
         }
     }
 }
