@@ -23,7 +23,7 @@ namespace Narato.Correlations.SerilogMiddleware.Middleware
                 throw new Exception("No correlation ID was found on the response headers. Did you set up Narato.Correlations correctly?");
             }
 
-            using (LogContext.PushProperty("CorrelationId", context.Response.Headers[CorrelationIdProvider.CORRELATION_ID_HEADER_NAME].First()))
+            using (LogContext.PushProperty("NarCorrelationId", context.Response.Headers[CorrelationIdProvider.CORRELATION_ID_HEADER_NAME].First()))
             {
                 return _next(context);
             }

@@ -3,13 +3,11 @@ This library contains Middleware for Serilog for automatically enriching log mes
 
 Getting started
 ==========
-### 1. Add dependency in project.json
+### 1. Add dependency in your project's csproj file
 
-```json
-"dependencies": {
-   "Narato.Correlations": "1.0.0",
-   "Narato.Correlations.SerilogMiddleware": "1.0.0" 
-}
+```xml
+<PackageReference Include="Narato.Correlations" Version="2.0.0" />
+<PackageReference Include="Narato.Correlations.SerilogMiddleware" Version="2.0.0" />
 ```
 
 ### 2. Configure Serilog.
