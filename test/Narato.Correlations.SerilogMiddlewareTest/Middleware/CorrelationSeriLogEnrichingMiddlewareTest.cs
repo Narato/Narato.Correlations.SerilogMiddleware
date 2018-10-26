@@ -38,7 +38,7 @@ namespace Narato.Correlations.SerilogMiddlewareTest.Middleware
                 })
                 .ConfigureServices(services =>
                 {
-                    Log.Logger = new LoggerConfiguration().Enrich.FromLogContext().MinimumLevel.Debug().WriteTo.TextWriter(_writer, outputTemplate: "[{Level} {CorrelationId}] {Message}{NewLine}{Exception}").CreateLogger();
+                    Log.Logger = new LoggerConfiguration().Enrich.FromLogContext().MinimumLevel.Debug().WriteTo.TextWriter(_writer, outputTemplate: "[{Level} {NarCorrelationId}] {Message}{NewLine}{Exception}").CreateLogger();
                     services.AddCorrelations();
                 });
 
@@ -49,7 +49,7 @@ namespace Narato.Correlations.SerilogMiddlewareTest.Middleware
 
             // Assert
             var debugMessage = _writer.ToString();
-            Assert.Equal($"[Debug {guid}] test\r\n", debugMessage);
+            Assert.Equal($"[Debug {guid}] test" + Environment.NewLine, debugMessage);
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace Narato.Correlations.SerilogMiddlewareTest.Middleware
                 })
                 .ConfigureServices(services =>
                 {
-                    Log.Logger = new LoggerConfiguration().Enrich.FromLogContext().MinimumLevel.Debug().WriteTo.TextWriter(_writer, outputTemplate: "[{Level} {CorrelationId}] {Message}{NewLine}{Exception}").CreateLogger();
+                    Log.Logger = new LoggerConfiguration().Enrich.FromLogContext().MinimumLevel.Debug().WriteTo.TextWriter(_writer, outputTemplate: "[{Level} {NarCorrelationId}] {Message}{NewLine}{Exception}").CreateLogger();
                     services.AddCorrelations();
                 });
 
